@@ -1,0 +1,24 @@
+site_name: "lit-checker"
+site_description: "computer vision experiment"
+site_url: "https://catalinnega.github.io/lit-checker"
+repo_url: https://github.com/catalinnega/lit-checker
+repo_name: "catalinnega/lit-checker"
+docs_dir: src
+
+theme:
+  name: material
+
+# See more at https://facelessuser.github.io/pymdown-extensions
+markdown_extensions:
+  - admonition
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences
+  - toc:
+      permalink: True
+
+plugins:
+  - search
+
+nav:
+  - Overview: index.md

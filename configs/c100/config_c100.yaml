@@ -1,0 +1,16 @@
+
+camera:
+  type: 'c100'
+  c100:
+    username: "your_username"
+    password: "your_password"
+    ip_address: "192.168.100.32"
+    port: 554
+    fps: 15
+files:
+  output_dir: out_test
+  output_prefix: test
+  video_file_extension: mp4
+log:
+  level: info
+  log_file_path: 'log.txt'
