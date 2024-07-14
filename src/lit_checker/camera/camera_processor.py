@@ -39,13 +39,24 @@ class CameraProcessor:
         self.log.info("Capture complete.")
         return self.frame_buffer
 
-    # @frame_height.setter
-    # def frame_height(self, value: int):
-    #     self.frame_height = value
-
-    # @frame_width.setter
-    # def frame_width(self, value: int):
-    #     self.frame_width = value
+    def write_frames(self, frame_buffer: list[np.ndarray]) -> str:
+        if len(frame_buffer):
+            output_video_path = self.__get_output_video_path(self.config.files)
+            encoder_protocol = self.__get_encoder_protocol_code(
+                self.config.files.video_file_extension)
+            video_writer = cv2.VideoWriter(output_video_path, encoder_protocol,
+                                           self.camera.fps, (self.frame_width, self.frame_height))
+            for frame in frame_buffer:
+                video_writer.write(frame)
+            video_writer.release()
+            self.log.info(
+                f"Wrote {len(self.frame_buffer)} frames at {output_video_path}")
+            cv2.destroyAllWindows()
+        else:
+            self.log.warning(
+                f"Attempted to write empty buffer (length {len(frame_buffer)})")
+            output_video_path = ""
+        return output_video_path
 
     def __load_camera(self, config: CameraConfig) -> BaseCamera:
         if config.type == 'c100':
@@ -76,22 +87,3 @@ class CameraProcessor:
                 f'Unknown video file extension: {video_file_extension}')
             encoder_protocol_code = -1
         return encoder_protocol_code
-
-    def write_frames(self, frame_buffer: list[np.ndarray]) -> str:
-        if len(frame_buffer):
-            output_video_path = self.__get_output_video_path(self.config.files)
-            encoder_protocol = self.__get_encoder_protocol_code(
-                self.config.files.video_file_extension)
-            video_writer = cv2.VideoWriter(output_video_path, encoder_protocol,
-                                           self.camera.fps, (self.frame_width, self.frame_height))
-            for frame in frame_buffer:
-                video_writer.write(frame)
-            video_writer.release()
-            self.log.info(
-                f"Wrote {len(self.frame_buffer)} frames at {output_video_path}")
-            cv2.destroyAllWindows()
-        else:
-            self.log.warning(
-                f"Attempted to write empty buffer (length {len(frame_buffer)})")
-            output_video_path = ""
-        return output_video_path
