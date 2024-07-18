@@ -21,6 +21,11 @@ class FilesConfig:
         metadata={
             "help": "Video file extension"
         })
+    background_image_fname: str = field(
+        default='background.jpg',
+        metadata={
+            "help": "Background image file name. Will be saved in 'output_dir' directory."
+        })
 
 
 @dataclass
