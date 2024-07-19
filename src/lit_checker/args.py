@@ -1,5 +1,8 @@
 from dataclasses import dataclass, field
-import yaml
+from typing import Any
+
+import yaml  # type: ignore
+
 from lit_checker.camera.args import CameraConfig
 from lit_checker.logging import LogConfig
 
@@ -24,7 +27,8 @@ class FilesConfig:
     background_image_fname: str = field(
         default='background.jpg',
         metadata={
-            "help": "Background image file name. Will be saved in 'output_dir' directory."
+            "help": "Background image file name. \
+                Will be saved in 'output_dir' directory."
         })
 
 
@@ -50,12 +54,12 @@ class GlobalConfig:
     )
 
     def __post_init__(self) -> None:
-        self.files = FilesConfig(**self.files.__dict__)
-        self.camera = CameraConfig(**self.camera.__dict__)
-        self.log = LogConfig(**self.log.__dict__)
+        self.files = FilesConfig(**self.files) # type: ignore
+        self.camera = CameraConfig(**self.camera) # type: ignore
+        self.log = LogConfig(**self.log) # type: ignore
 
     @staticmethod
-    def from_yaml(yaml_config_path: str) -> GlobalConfig:
+    def from_yaml(yaml_config_path: str) -> Any:
         with open(yaml_config_path, 'rb') as r:
             cfg = yaml.safe_load(r)
         config = GlobalConfig(**cfg)

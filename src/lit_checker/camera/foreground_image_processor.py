@@ -1,14 +1,18 @@
-import cv2
-import os
-import numpy as np
 import logging
+import os
 
+import cv2  # type: ignore
+import numpy as np  # type: ignore
 from lit_checker.args import FilesConfig
-from lit_checker.logging import get_logger, LogConfig
+from lit_checker.logging import LogConfig, get_logger
 
 
 class ForegroundImageProcessor:
-    def __init__(self, config: FilesConfig, logger: logging.Logger | None, verbose: bool = False):
+    def __init__(
+            self,
+            config: FilesConfig,
+            logger: logging.Logger | None,
+            verbose: bool = False):
         if logger is not None:
             self.log = logger
         else:
@@ -47,7 +51,9 @@ class ForegroundImageProcessor:
         contours: list[np.ndarray] = found_contours
         return contours
 
-    def apply_foreground_post_processing(self, foreground_frame: np.ndarray) -> np.ndarray:
+    def apply_foreground_post_processing(
+            self,
+            foreground_frame: np.ndarray) -> np.ndarray:
         _, binary_mask = cv2.threshold(
             foreground_frame, 200, 255, cv2.THRESH_BINARY)
         kernel = np.ones((5, 5), np.uint8)
@@ -55,14 +61,17 @@ class ForegroundImageProcessor:
         clean_mask = cv2.morphologyEx(clean_mask, cv2.MORPH_OPEN, kernel)
         return clean_mask
 
-    def plot_contour(self, current_frame: np.ndarray, contours: list[np.ndarray]) -> str:
+    def plot_contour(
+            self,
+            current_frame: np.ndarray,
+            contours: list[np.ndarray]) -> str:
         local_output_dir = os.path.join(self.config.output_dir, 'contours')
         if not os.path.exists(local_output_dir):
             os.makedirs(local_output_dir)
             self.log.info(f"Created directory at: {local_output_dir}")
         foreground_frame_copy = current_frame.copy()
         output_path = os.path.join(
-            local_output_dir, f'contour_add.jpg')
+            local_output_dir, 'contour_add.jpg')
         cv2.drawContours(foreground_frame_copy,
                          contours, -1, (0, 255, 0), 2)
         cv2.imwrite(output_path, foreground_frame_copy)

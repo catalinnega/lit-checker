@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+
 from lit_checker.camera.c100.args import C100Config
 
 
@@ -17,4 +18,4 @@ class CameraConfig:
     )
 
     def __post_init__(self) -> None:
-        self.c100 = C100Config(**self.c100.__dict__)
+        self.c100 = C100Config(**self.c100) # type: ignore

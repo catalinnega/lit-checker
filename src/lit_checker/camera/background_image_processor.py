@@ -1,15 +1,19 @@
-import cv2
-import os
-import numpy as np
 import logging
+import os
 
+import cv2  # type: ignore
+import numpy as np  # type: ignore
 from lit_checker.args import FilesConfig
-
-from lit_checker.logging import get_logger, LogConfig
+from lit_checker.logging import LogConfig, get_logger
 
 
 class BackgroundImageProcessor:
-    def __init__(self, config: FilesConfig, camera_url: str, logger: logging.Logger | None, verbose: bool = False):
+    def __init__(
+            self, 
+            config: FilesConfig, 
+            camera_url: str,
+            logger: logging.Logger | None, 
+            verbose: bool = False):
         if logger is not None:
             self.log = logger
         else:
@@ -21,7 +25,10 @@ class BackgroundImageProcessor:
             self.background_image_path, self.camera_url)
         self.verbose = verbose
 
-    def __get_background_image_frame(self, background_image_path: str, camera_url: str) -> np.ndarray:
+    def __get_background_image_frame(
+            self, 
+            background_image_path: str, 
+            camera_url: str) -> np.ndarray:
         if not os.path.exists(background_image_path):
             background_image = self.__capture_background_image(
                 camera_url,

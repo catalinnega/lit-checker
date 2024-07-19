@@ -12,6 +12,8 @@ classifiers = ["Private :: Do Not Upload"]
 python = "^3.10"
 opencv-python = "^4.10.0.84"
 pyyaml = "^6.0.1"
+types-pyyaml = "^6.0.12.20240311"
+numpy = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 mkdocs = "*"
@@ -29,6 +31,7 @@ lint = { cmd = "pre-commit run --all-files", help = "Run linters and formatters"
 test = { cmd = "pytest", help = "Run tests" }
 
 [tool.ruff]
+line-length = 99
 fix = true
 select = ["B", "E", "F", "I", "SIM", "UP"]
 

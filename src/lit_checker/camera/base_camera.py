@@ -1,5 +1,5 @@
-from typing import Any
 from abc import abstractmethod
+from typing import Any
 
 
 class BaseCamera:

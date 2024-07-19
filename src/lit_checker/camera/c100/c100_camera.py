@@ -1,5 +1,5 @@
-from lit_checker.camera.c100.args import C100Config
 from lit_checker.camera.base_camera import BaseCamera
+from lit_checker.camera.c100.args import C100Config
 
 
 class C100Camera(BaseCamera):

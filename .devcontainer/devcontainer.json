@@ -10,7 +10,11 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"dbaeumer.vscode-eslint"
+				"dbaeumer.vscode-eslint",
+				"charliermarsh.ruff",
+				"ms-azuretools.vscode-docker",
+				"ms-python.vscode-pylance",
+				"matangover.mypy"
 			]
 		}
 	},

@@ -1,15 +1,15 @@
-import cv2
-import numpy as np
 import os
 from datetime import datetime
 from time import time
 
-from lit_checker.args import GlobalConfig, FilesConfig
+import cv2  # type: ignore
+import numpy as np  # type: ignore
+from lit_checker.args import FilesConfig, GlobalConfig
 from lit_checker.camera.args import CameraConfig
-from lit_checker.camera.base_camera import BaseCamera
 from lit_checker.camera.background_image_processor import BackgroundImageProcessor
-from lit_checker.camera.foreground_image_processor import ForegroundImageProcessor
+from lit_checker.camera.base_camera import BaseCamera
 from lit_checker.camera.exceptions import InvalidCameraTypeException
+from lit_checker.camera.foreground_image_processor import ForegroundImageProcessor
 from lit_checker.logging import get_logger
 
 
@@ -44,12 +44,12 @@ class CameraProcessor:
         warmup_seconds = 3
         start_time = time()
         motion_detected = False
-        self.log.info(f"Running capture routine..")
+        self.log.info("Running capture routine..")
         while True:
             are_frames, frame = capture.read()
             if not are_frames:
                 self.log.warning(
-                    f"Frame could not be captured")
+                    "Frame could not be captured")
                 break
             # foreground_frame = self.foreground_processor.subtract_background(
             #     current_frame=frame,
@@ -69,8 +69,6 @@ class CameraProcessor:
                 for contour in contours:
                     # Adjust the threshold based on your application
                     area_value = cv2.contourArea(contour)
-                    # self.log.info(
-                    #    f"len(contours): {len(contours)} cv2.contourArea(contour): {area_value}")
                     if area_value > 2500:
                         motion_detected = True
                         self.log.info(f"Motion detected {area_value}")
