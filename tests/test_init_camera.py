@@ -11,4 +11,4 @@ def test_init_camera(yaml_config_path: str) -> None:
 
 @pytest.fixture
 def yaml_config_path() -> str:
-    return 'configs/c100/config_c100.yaml'
+    return "configs/c100/config_c100.yaml"
