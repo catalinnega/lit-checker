@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-import yaml  # type: ignore
+import yaml
 
 from lit_checker.camera.args import CameraConfig
 from lit_checker.logging import LogConfig
@@ -54,9 +54,9 @@ class GlobalConfig:
     )
 
     def __post_init__(self) -> None:
-        self.files = FilesConfig(**self.files) # type: ignore
-        self.camera = CameraConfig(**self.camera) # type: ignore
-        self.log = LogConfig(**self.log) # type: ignore
+        self.files = FilesConfig(**self.files)  # type: ignore
+        self.camera = CameraConfig(**self.camera)  # type: ignore
+        self.log = LogConfig(**self.log)  # type: ignore
 
     @staticmethod
     def from_yaml(yaml_config_path: str) -> Any:
