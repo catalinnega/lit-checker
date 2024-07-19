@@ -53,5 +53,5 @@ def get_logging_level(log_config: LogConfig) -> str:
     log_level_setting = log_config.level.upper()
     if log_level_setting not in ['DEBUG', 'INFO', 'WARNING', 'ERROR']:
         log_level_setting = 'DEBUG'
-    logging_level = getattr(logging, log_config.level.upper())
+    logging_level: str = getattr(logging, log_config.level.upper())
     return logging_level

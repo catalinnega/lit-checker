@@ -1,0 +1,3 @@
+
+class InvalidCameraTypeException(Exception):
+    pass

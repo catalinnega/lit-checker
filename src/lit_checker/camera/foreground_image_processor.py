@@ -21,7 +21,7 @@ class ForegroundImageProcessor:
             self,
             current_frame: np.ndarray,
             background_frame: np.ndarray,
-            postprocess_foreground: bool = True):
+            postprocess_foreground: bool = True) -> np.ndarray:
         added_frame = cv2.bitwise_and(current_frame, background_frame)
         foreground_frame = self.background_subtractor.apply(added_frame)
 
@@ -42,8 +42,9 @@ class ForegroundImageProcessor:
         return foreground_frame
 
     def find_contours(self, foreground_frame: np.ndarray) -> list[np.ndarray]:
-        contours, _ = cv2.findContours(
+        found_contours, _ = cv2.findContours(
             foreground_frame.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours: list[np.ndarray] = found_contours
         return contours
 
     def apply_foreground_post_processing(self, foreground_frame: np.ndarray) -> np.ndarray:

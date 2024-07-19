@@ -11,6 +11,7 @@ classifiers = ["Private :: Do Not Upload"]
 [tool.poetry.dependencies]
 python = "^3.10"
 opencv-python = "^4.10.0.84"
+pyyaml = "^6.0.1"
 
 [tool.poetry.group.dev.dependencies]
 mkdocs = "*"

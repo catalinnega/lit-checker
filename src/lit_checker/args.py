@@ -49,13 +49,13 @@ class GlobalConfig:
         }
     )
 
-    def __post_init__(self):
-        self.files = FilesConfig(**self.files)
-        self.camera = CameraConfig(**self.camera)
-        self.log = LogConfig(**self.log)
+    def __post_init__(self) -> None:
+        self.files = FilesConfig(**self.files.__dict__)
+        self.camera = CameraConfig(**self.camera.__dict__)
+        self.log = LogConfig(**self.log.__dict__)
 
     @staticmethod
-    def from_yaml(yaml_config_path: str):
+    def from_yaml(yaml_config_path: str) -> GlobalConfig:
         with open(yaml_config_path, 'rb') as r:
             cfg = yaml.safe_load(r)
         config = GlobalConfig(**cfg)

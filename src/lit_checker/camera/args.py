@@ -16,5 +16,5 @@ class CameraConfig:
         }
     )
 
-    def __post_init__(self):
-        self.c100 = C100Config(**self.c100)
+    def __post_init__(self) -> None:
+        self.c100 = C100Config(**self.c100.__dict__)

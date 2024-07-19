@@ -9,6 +9,7 @@ from lit_checker.camera.args import CameraConfig
 from lit_checker.camera.base_camera import BaseCamera
 from lit_checker.camera.background_image_processor import BackgroundImageProcessor
 from lit_checker.camera.foreground_image_processor import ForegroundImageProcessor
+from lit_checker.camera.exceptions import InvalidCameraTypeException
 from lit_checker.logging import get_logger
 
 
@@ -30,7 +31,7 @@ class CameraProcessor:
             verbose=verbose
         )
 
-        self.frame_buffer = []
+        self.frame_buffer: list[np.ndarray] = []
         self.frame_height = 0
         self.frame_width = 0
 
@@ -107,11 +108,12 @@ class CameraProcessor:
         if config.type == 'c100':
             from lit_checker.camera.c100.c100_camera import C100Camera
             camera = C100Camera(config.c100)
+            return camera
         else:
             self.log.error(
                 f"Camera could not be identified with camera type: '{config.type}'.")
-            camera = None
-        return camera
+            raise InvalidCameraTypeException(
+                f"Invalid camera type: {config.type}")
 
     def __get_frame_specs(self, cap: cv2.VideoCapture) -> tuple[int, int]:
         frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -126,7 +128,7 @@ class CameraProcessor:
 
     def __get_encoder_protocol_code(self, video_file_extension: str) -> int:
         if video_file_extension == 'mp4':
-            encoder_protocol_code = cv2.VideoWriter_fourcc(*'mp4v')
+            encoder_protocol_code: int = cv2.VideoWriter_fourcc(*'mp4v')
         else:
             self.log.error(
                 f'Unknown video file extension: {video_file_extension}')
