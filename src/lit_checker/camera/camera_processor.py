@@ -2,8 +2,9 @@ import os
 from datetime import datetime
 from time import time
 
-import cv2  # type: ignore
-import numpy as np  # type: ignore
+import cv2
+import numpy as np
+from cv2 import VideoWriter_fourcc  # type: ignore
 from lit_checker.args import FilesConfig, GlobalConfig
 from lit_checker.camera.args import CameraConfig
 from lit_checker.camera.background_image_processor import BackgroundImageProcessor
@@ -11,6 +12,7 @@ from lit_checker.camera.base_camera import BaseCamera
 from lit_checker.camera.exceptions import InvalidCameraTypeException
 from lit_checker.camera.foreground_image_processor import ForegroundImageProcessor
 from lit_checker.logging import get_logger
+from numpy.typing import NDArray
 
 
 class CameraProcessor:
@@ -31,11 +33,11 @@ class CameraProcessor:
             verbose=verbose
         )
 
-        self.frame_buffer: list[np.ndarray] = []
+        self.frame_buffer: list[NDArray[np.int_]] = []
         self.frame_height = 0
         self.frame_width = 0
 
-    def run_capture_routine(self, maximum_frames: int = 0) -> list[np.ndarray]:
+    def run_capture_routine(self, maximum_frames: int = 0) -> list[NDArray[np.int_]]:
         capture = cv2.VideoCapture(self.camera.url)
         frame_width, frame_height = self.__get_frame_specs(capture)
         self.frame_width = frame_width
@@ -46,7 +48,7 @@ class CameraProcessor:
         motion_detected = False
         self.log.info("Running capture routine..")
         while True:
-            are_frames, frame = capture.read()
+            are_frames, frame = self.__read_frame(capture)
             if not are_frames:
                 self.log.warning(
                     "Frame could not be captured")
@@ -56,8 +58,7 @@ class CameraProcessor:
             #     background_frame=self.background_image.background_image_frame,
             #     postprocess_foreground=True)
 
-            foreground_frame = self.foreground_processor.background_subtractor.apply(
-                frame.copy())
+            foreground_frame = self.__apply_background_subtractor(frame.copy())
             if time() - start_time > warmup_seconds:
                 foreground_frame = self.foreground_processor.apply_foreground_post_processing(
                     foreground_frame)
@@ -83,7 +84,7 @@ class CameraProcessor:
         self.log.info("Capture complete.")
         return self.frame_buffer
 
-    def write_frames(self, frame_buffer: list[np.ndarray]) -> str:
+    def write_frames(self, frame_buffer: list[NDArray[np.int_]]) -> str:
         if len(frame_buffer):
             output_video_path = self.__get_output_video_path(self.config.files)
             encoder_protocol = self.__get_encoder_protocol_code(
@@ -101,6 +102,17 @@ class CameraProcessor:
                 f"Attempted to write empty buffer (length {len(frame_buffer)})")
             output_video_path = ""
         return output_video_path
+
+    def __read_frame(self, capture: cv2.VideoCapture) -> tuple[bool, NDArray[np.int_]]:
+        are_frames, frame_cv2 = capture.read()
+        frame = np.array(frame_cv2, dtype=np.int_)
+        return are_frames, frame
+
+    def __apply_background_subtractor(self, frame: NDArray[np.int_]) -> NDArray[np.int_]:
+        frame_cv2 = self.foreground_processor.background_subtractor.apply(
+            frame)
+        frame = np.array(frame_cv2, dtype=np.int_)
+        return frame
 
     def __load_camera(self, config: CameraConfig) -> BaseCamera:
         if config.type == 'c100':
@@ -126,7 +138,7 @@ class CameraProcessor:
 
     def __get_encoder_protocol_code(self, video_file_extension: str) -> int:
         if video_file_extension == 'mp4':
-            encoder_protocol_code: int = cv2.VideoWriter_fourcc(*'mp4v')
+            encoder_protocol_code: int = VideoWriter_fourcc(*'mp4v')
         else:
             self.log.error(
                 f'Unknown video file extension: {video_file_extension}')
