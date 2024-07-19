@@ -33,6 +33,8 @@ test = { cmd = "pytest", help = "Run tests" }
 [tool.ruff]
 line-length = 99
 fix = true
+
+[tool.ruff.lint]
 select = ["B", "E", "F", "I", "SIM", "UP"]
 
 [tool.mypy]

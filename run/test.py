@@ -1,7 +1,3 @@
-
-import cv2
-from datetime import datetime
-import os
 import argparse
 
 from lit_checker.args import GlobalConfig
@@ -16,7 +12,7 @@ def main(yaml_config_path: str) -> None:
     print(f"Wrote frames at: {output_path}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--cfg",
@@ -24,6 +20,7 @@ if __name__ == '__main__':
         action="store",
         type=str,
         required=True,
-        help="YAML configuration file path")
+        help="YAML configuration file path",
+    )
     args = parser.parse_args()
     main(args.cfg)

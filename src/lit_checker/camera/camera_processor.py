@@ -22,15 +22,11 @@ class CameraProcessor:
         self.log = get_logger(config.log)
 
         self.background_image = BackgroundImageProcessor(
-            config=self.config.files,
-            camera_url=self.camera.url,
-            logger=self.log,
-            verbose=verbose)
+            config=self.config.files, camera_url=self.camera.url, logger=self.log, verbose=verbose
+        )
 
         self.foreground_processor = ForegroundImageProcessor(
-            config=self.config.files,
-            logger=self.log,
-            verbose=verbose
+            config=self.config.files, logger=self.log, verbose=verbose
         )
 
         self.frame_buffer: list[NDArray[np.int_]] = []
@@ -50,8 +46,7 @@ class CameraProcessor:
         while True:
             are_frames, frame = self.__read_frame(capture)
             if not are_frames:
-                self.log.warning(
-                    "Frame could not be captured")
+                self.log.warning("Frame could not be captured")
                 break
             # foreground_frame = self.foreground_processor.subtract_background(
             #     current_frame=frame,
@@ -61,10 +56,10 @@ class CameraProcessor:
             foreground_frame = self.__apply_background_subtractor(frame.copy())
             if time() - start_time > warmup_seconds:
                 foreground_frame = self.foreground_processor.apply_foreground_post_processing(
-                    foreground_frame)
+                    foreground_frame
+                )
 
-                contours = self.foreground_processor.find_contours(
-                    foreground_frame)
+                contours = self.foreground_processor.find_contours(foreground_frame)
                 # self.foreground_processor.plot_contour(frame, contours)
 
                 for contour in contours:
@@ -88,18 +83,21 @@ class CameraProcessor:
         if len(frame_buffer):
             output_video_path = self.__get_output_video_path(self.config.files)
             encoder_protocol = self.__get_encoder_protocol_code(
-                self.config.files.video_file_extension)
-            video_writer = cv2.VideoWriter(output_video_path, encoder_protocol,
-                                           self.camera.fps, (self.frame_width, self.frame_height))
+                self.config.files.video_file_extension
+            )
+            video_writer = cv2.VideoWriter(
+                output_video_path,
+                encoder_protocol,
+                self.camera.fps,
+                (self.frame_width, self.frame_height),
+            )
             for frame in frame_buffer:
                 video_writer.write(frame)
             video_writer.release()
-            self.log.info(
-                f"Wrote {len(self.frame_buffer)} frames at {output_video_path}")
+            self.log.info(f"Wrote {len(self.frame_buffer)} frames at {output_video_path}")
             cv2.destroyAllWindows()
         else:
-            self.log.warning(
-                f"Attempted to write empty buffer (length {len(frame_buffer)})")
+            self.log.warning(f"Attempted to write empty buffer (length {len(frame_buffer)})")
             output_video_path = ""
         return output_video_path
 
@@ -109,21 +107,19 @@ class CameraProcessor:
         return are_frames, frame
 
     def __apply_background_subtractor(self, frame: NDArray[np.int_]) -> NDArray[np.int_]:
-        frame_cv2 = self.foreground_processor.background_subtractor.apply(
-            frame)
+        frame_cv2 = self.foreground_processor.background_subtractor.apply(frame)
         frame = np.array(frame_cv2, dtype=np.int_)
         return frame
 
     def __load_camera(self, config: CameraConfig) -> BaseCamera:
-        if config.type == 'c100':
+        if config.type == "c100":
             from lit_checker.camera.c100.c100_camera import C100Camera
+
             camera = C100Camera(config.c100)
             return camera
         else:
-            self.log.error(
-                f"Camera could not be identified with camera type: '{config.type}'.")
-            raise InvalidCameraTypeException(
-                f"Invalid camera type: {config.type}")
+            self.log.error(f"Camera could not be identified with camera type: '{config.type}'.")
+            raise InvalidCameraTypeException(f"Invalid camera type: {config.type}")
 
     def __get_frame_specs(self, cap: cv2.VideoCapture) -> tuple[int, int]:
         frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -133,14 +129,14 @@ class CameraProcessor:
     def __get_output_video_path(self, config: FilesConfig) -> str:
         date_str = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         output_video_path = os.path.join(
-            config.output_dir, f"{config.output_prefix}_{date_str}.{config.video_file_extension}")
+            config.output_dir, f"{config.output_prefix}_{date_str}.{config.video_file_extension}"
+        )
         return output_video_path
 
     def __get_encoder_protocol_code(self, video_file_extension: str) -> int:
-        if video_file_extension == 'mp4':
-            encoder_protocol_code: int = VideoWriter_fourcc(*'mp4v')
+        if video_file_extension == "mp4":
+            encoder_protocol_code: int = VideoWriter_fourcc(*"mp4v")
         else:
-            self.log.error(
-                f'Unknown video file extension: {video_file_extension}')
+            self.log.error(f"Unknown video file extension: {video_file_extension}")
             encoder_protocol_code = -1
         return encoder_protocol_code
