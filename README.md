@@ -4,7 +4,7 @@
 [![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
-computer vision experiment
+computer vision experiment (in progress)
 
 ## Installation
 You can install the required python packages with '__poetry__' or '__pip__'. If you want, you can also run the __.devcontainer__ for a docker image with _python3.11_.
