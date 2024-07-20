@@ -20,10 +20,10 @@ class ForegroundImageProcessor:
 
     def subtract_background(
         self,
-        current_frame: NDArray[np.int_],
-        background_frame: NDArray[np.int_],
+        current_frame: NDArray[np.uint8],
+        background_frame: NDArray[np.uint8],
         postprocess_foreground: bool = True,
-    ) -> NDArray[np.int_]:
+    ) -> NDArray[np.uint8]:
         added_frame = self.__get_added_frame(current_frame, background_frame)
         foreground_frame = self.__apply_background_subtractor(added_frame)
 
@@ -45,27 +45,27 @@ class ForegroundImageProcessor:
             )
         return foreground_frame
 
-    def find_contours(self, foreground_frame: NDArray[np.int_]) -> list[NDArray[np.int_]]:
+    def find_contours(self, foreground_frame: NDArray[np.uint8]) -> list[NDArray[np.int32]]:
         found_contours, _ = cv2.findContours(
             foreground_frame.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
-        contours: list[NDArray[np.int_]] = [
-            np.array(contour, dtype=np.int_) for contour in found_contours
+        contours: list[NDArray[np.int32]] = [
+            np.array(contour, dtype=np.int32) for contour in found_contours
         ]
         return contours
 
     def apply_foreground_post_processing(
-        self, foreground_frame: NDArray[np.int_]
-    ) -> NDArray[np.int_]:
+        self, foreground_frame: NDArray[np.uint8]
+    ) -> NDArray[np.uint8]:
         _, binary_mask = cv2.threshold(foreground_frame, 200, 255, cv2.THRESH_BINARY)
         kernel = np.ones((5, 5), np.uint8)
         clean_mask_cv2 = cv2.morphologyEx(binary_mask, cv2.MORPH_CLOSE, kernel)
         clean_mask_cv2 = cv2.morphologyEx(clean_mask_cv2, cv2.MORPH_OPEN, kernel)
-        clean_mask = np.array(clean_mask_cv2, dtype=np.int_)
+        clean_mask = np.array(clean_mask_cv2, dtype=np.uint8)
         return clean_mask
 
     def plot_contour(
-        self, current_frame: NDArray[np.int_], contours: list[NDArray[np.int_]]
+        self, current_frame: NDArray[np.uint8], contours: list[NDArray[np.int32]]
     ) -> str:
         local_output_dir = os.path.join(self.config.output_dir, "contours")
         if not os.path.exists(local_output_dir):
@@ -78,24 +78,24 @@ class ForegroundImageProcessor:
         self.log.info(f"Wrote added image at {output_path}")
         return output_path
 
-    def __apply_background_subtractor(self, frame: NDArray[np.int_]) -> NDArray[np.int_]:
+    def __apply_background_subtractor(self, frame: NDArray[np.uint8]) -> NDArray[np.uint8]:
         frame_cv2 = self.background_subtractor.apply(frame)
-        frame = np.array(frame_cv2, dtype=np.int_)
+        frame = np.array(frame_cv2, dtype=np.uint8)
         return frame
 
     def __get_added_frame(
-        self, current_frame: NDArray[np.int_], background_frame: NDArray[np.int_]
-    ) -> NDArray[np.int_]:
+        self, current_frame: NDArray[np.uint8], background_frame: NDArray[np.uint8]
+    ) -> NDArray[np.uint8]:
         added_frame_cv2 = cv2.bitwise_and(current_frame, background_frame)
-        added_frame = np.array(added_frame_cv2, dtype=np.int_)
+        added_frame = np.array(added_frame_cv2, dtype=np.uint8)
         return added_frame
 
     def __log_background_images(
         self,
-        current_frame: NDArray[np.int_],
-        added_frame: NDArray[np.int_],
-        foreground_frame: NDArray[np.int_],
-        foreground_frame_postprocessed: NDArray[np.int_],
+        current_frame: NDArray[np.uint8],
+        added_frame: NDArray[np.uint8],
+        foreground_frame: NDArray[np.uint8],
+        foreground_frame_postprocessed: NDArray[np.uint8],
         output_dir: str,
         output_fname_prefix: str,
     ) -> str:

@@ -1,17 +1,15 @@
 import os
 from datetime import datetime
-from time import time
 
 import cv2
 import numpy as np
 from cv2 import VideoWriter_fourcc  # type: ignore
 from lit_checker.args import FilesConfig, GlobalConfig
 from lit_checker.camera.args import CameraConfig
-from lit_checker.camera.background_image_processor import BackgroundImageProcessor
 from lit_checker.camera.base_camera import BaseCamera
 from lit_checker.camera.exceptions import InvalidCameraTypeException
-from lit_checker.camera.foreground_image_processor import ForegroundImageProcessor
 from lit_checker.logging import get_logger
+from lit_checker.motion_detection.motion_detector import MotionDetector
 from numpy.typing import NDArray
 
 
@@ -21,26 +19,23 @@ class CameraProcessor:
         self.camera = self.__load_camera(config.camera)
         self.log = get_logger(config.log)
 
-        self.background_image = BackgroundImageProcessor(
-            config=self.config.files, camera_url=self.camera.url, logger=self.log, verbose=verbose
+        self.motion_detector = MotionDetector(
+            config.motion_detection,
+            files_config=config.files,
+            camera_url=self.camera.url,
+            logger=self.log,
         )
 
-        self.foreground_processor = ForegroundImageProcessor(
-            config=self.config.files, logger=self.log, verbose=verbose
-        )
-
-        self.frame_buffer: list[NDArray[np.int_]] = []
+        self.frame_buffer: list[NDArray[np.uint8]] = []
         self.frame_height = 0
         self.frame_width = 0
 
-    def run_capture_routine(self, maximum_frames: int = 0) -> list[NDArray[np.int_]]:
+    def run_capture_routine(self, maximum_frames: int = 0) -> list[NDArray[np.uint8]]:
         capture = cv2.VideoCapture(self.camera.url)
         frame_width, frame_height = self.__get_frame_specs(capture)
         self.frame_width = frame_width
         self.frame_height = frame_height
 
-        warmup_seconds = 3
-        start_time = time()
         motion_detected = False
         self.log.info("Running capture routine..")
         while True:
@@ -48,38 +43,17 @@ class CameraProcessor:
             if not are_frames:
                 self.log.warning("Frame could not be captured")
                 break
-            # foreground_frame = self.foreground_processor.subtract_background(
-            #     current_frame=frame,
-            #     background_frame=self.background_image.background_image_frame,
-            #     postprocess_foreground=True)
 
-            foreground_frame = self.__apply_background_subtractor(frame.copy())
-            if time() - start_time > warmup_seconds:
-                foreground_frame = self.foreground_processor.apply_foreground_post_processing(
-                    foreground_frame
-                )
-
-                contours = self.foreground_processor.find_contours(foreground_frame)
-                # self.foreground_processor.plot_contour(frame, contours)
-
-                for contour in contours:
-                    # Adjust the threshold based on your application
-                    area_value = cv2.contourArea(contour)
-                    if area_value > 2500:
-                        motion_detected = True
-                        self.log.info(f"Motion detected {area_value}")
-                        self.foreground_processor.plot_contour(frame, contours)
-
-                        break
-                if motion_detected:
-                    self.frame_buffer.append(frame.copy())
-                if maximum_frames and len(self.frame_buffer) >= maximum_frames:
-                    self.log.info(f"Maximum frames reached: {maximum_frames}")
-                    break
+            motion_detected, motion_detection_changed = self.motion_detector.apply(frame.copy())
+            if motion_detected:
+                self.frame_buffer.append(frame.copy())
+            if maximum_frames and len(self.frame_buffer) >= maximum_frames:
+                self.log.info(f"Maximum frames reached: {maximum_frames}")
+                break
         self.log.info("Capture complete.")
         return self.frame_buffer
 
-    def write_frames(self, frame_buffer: list[NDArray[np.int_]]) -> str:
+    def write_frames(self, frame_buffer: list[NDArray[np.uint8]]) -> str:
         if len(frame_buffer):
             output_video_path = self.__get_output_video_path(self.config.files)
             encoder_protocol = self.__get_encoder_protocol_code(
@@ -95,21 +69,15 @@ class CameraProcessor:
                 video_writer.write(frame)
             video_writer.release()
             self.log.info(f"Wrote {len(self.frame_buffer)} frames at {output_video_path}")
-            cv2.destroyAllWindows()
         else:
             self.log.warning(f"Attempted to write empty buffer (length {len(frame_buffer)})")
             output_video_path = ""
         return output_video_path
 
-    def __read_frame(self, capture: cv2.VideoCapture) -> tuple[bool, NDArray[np.int_]]:
+    def __read_frame(self, capture: cv2.VideoCapture) -> tuple[bool, NDArray[np.uint8]]:
         are_frames, frame_cv2 = capture.read()
-        frame = np.array(frame_cv2, dtype=np.int_)
+        frame = np.array(frame_cv2, dtype=np.uint8)
         return are_frames, frame
-
-    def __apply_background_subtractor(self, frame: NDArray[np.int_]) -> NDArray[np.int_]:
-        frame_cv2 = self.foreground_processor.background_subtractor.apply(frame)
-        frame = np.array(frame_cv2, dtype=np.int_)
-        return frame
 
     def __load_camera(self, config: CameraConfig) -> BaseCamera:
         if config.type == "c100":

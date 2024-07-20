@@ -5,6 +5,7 @@ import yaml
 
 from lit_checker.camera.args import CameraConfig
 from lit_checker.logging import LogConfig
+from lit_checker.motion_detection.args import MotionDetectionConfig
 
 
 @dataclass
@@ -26,11 +27,15 @@ class GlobalConfig:
     camera: CameraConfig = field(default_factory=CameraConfig, metadata={"help": "Camera config"})
     files: FilesConfig = field(default_factory=FilesConfig, metadata={"help": "Files config"})
     log: LogConfig = field(default_factory=LogConfig, metadata={"help": "Logging config"})
+    motion_detection: MotionDetectionConfig = field(
+        default_factory=MotionDetectionConfig, metadata={"help": "Motion detection config"}
+    )
 
     def __post_init__(self) -> None:
         self.files = FilesConfig(**self.files)  # type: ignore
         self.camera = CameraConfig(**self.camera)  # type: ignore
         self.log = LogConfig(**self.log)  # type: ignore
+        self.motion_detection = MotionDetectionConfig(**self.motion_detection)  # type: ignore
 
     @staticmethod
     def from_yaml(yaml_config_path: str) -> Any:

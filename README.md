@@ -21,6 +21,8 @@ pip install -e .
 ### .devcontainer (Optional)
 
 ## Usage
+
+### Camera recording
 First, you should update the YAML config file with your camera __username__, __password__ and __IP__. For more details see [here](#camera-account-information-parsing). The configuration file is located in the __configs__ directory. For example _config_c100.yaml_ can be located here:
 ```sh
 ...
@@ -43,6 +45,17 @@ import lit-checker
 # TODO
 ```
 
+### Data annotation
+Convert your video to images to create a video-images folder:
+```bash
+video-toimg your_video_file ## # this creates your_video_file/ directory
+```
+
+Run the annotation tool on your video-images folder:
+```bash
+labelme your_video_directory --label your_labels.txt --nodata --keep-prev
+```
+
 ## Camera account information parsing
 ### Camera configuration (Tapo c100)
 - On the tapo app, go to camera settings and find the account username, password and device IP;
@@ -51,6 +64,9 @@ import lit-checker
 
 - You should open the 554 port on the firewall.
 
+## References
+ Data annotation: [Image Polygonal Annotation with Python
+](https://github.com/labelmeai/labelme)
 
 ## Links
 - [Documentation](https://catalinnega.github.io/lit-checker)

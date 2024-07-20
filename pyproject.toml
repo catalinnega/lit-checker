@@ -10,10 +10,11 @@ classifiers = ["Private :: Do Not Upload"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-opencv-python = "^4.10.0.84"
 pyyaml = "^6.0.1"
 types-pyyaml = "^6.0.12.20240311"
 numpy = "^2.0.0"
+opencv-python-headless = "^4.10.0.84"
+labelme = "^5.5.0"
 
 [tool.poetry.group.dev.dependencies]
 mkdocs = "*"

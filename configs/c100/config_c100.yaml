@@ -11,6 +11,13 @@ files:
   output_dir: out_test
   output_prefix: test
   video_file_extension: mp4
+motion_detection:
+  motion_min_contour_area: 2500
+  warmup_seconds: 2.0
+  detection_persistance:
+    memory_size: 10
+    activation_detection_ratio_threshold: 0.0
+    deactivation_detection_ratio_threshold: 0.1
 log:
   level: info
   log_file_path: 'log.txt'

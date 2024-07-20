@@ -49,7 +49,11 @@
 		"ghcr.io/akhildevelops/devcontainer-features/pip:0": {},
 		"ghcr.io/wxw-matt/devcontainer-features/command_runner:0": {},
 		"ghcr.io/wxw-matt/devcontainer-features/script_runner:0": {}
-	}
+	},
+	"remoteEnv": {
+		"QT_QPA_PLATFORM": "wayland"
+	},
+	"postCreateCommand": "echo 'export QT_QPA_PLATFORM=wayland' >> ~/.bashrc"
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
