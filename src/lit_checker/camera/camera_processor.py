@@ -17,7 +17,7 @@ class CameraProcessor:
     def __init__(self, config: GlobalConfig, verbose: bool = False):
         self.config = config
         self.camera = self.__load_camera(config.camera)
-        self.log = get_logger(config.log)
+        self.log = get_logger(config.log, config.files.output_dir)
 
         self.motion_detector = MotionDetector(
             config.motion_detection,
@@ -44,9 +44,13 @@ class CameraProcessor:
                 self.log.warning("Frame could not be captured")
                 break
 
-            motion_detected, motion_detection_changed = self.motion_detector.apply(frame.copy())
+            motion_detected, motion_detection_changed = self.motion_detector.apply(
+                frame.copy())
             if motion_detected:
                 self.frame_buffer.append(frame.copy())
+            elif motion_detection_changed:
+                self.write_frames(self.frame_buffer)
+                self.frame_buffer = []
             if maximum_frames and len(self.frame_buffer) >= maximum_frames:
                 self.log.info(f"Maximum frames reached: {maximum_frames}")
                 break
@@ -68,9 +72,11 @@ class CameraProcessor:
             for frame in frame_buffer:
                 video_writer.write(frame)
             video_writer.release()
-            self.log.info(f"Wrote {len(self.frame_buffer)} frames at {output_video_path}")
+            self.log.info(
+                f"Wrote {len(self.frame_buffer)} frames at {output_video_path}")
         else:
-            self.log.warning(f"Attempted to write empty buffer (length {len(frame_buffer)})")
+            self.log.warning(
+                f"Attempted to write empty buffer (length {len(frame_buffer)})")
             output_video_path = ""
         return output_video_path
 
@@ -86,8 +92,10 @@ class CameraProcessor:
             camera = C100Camera(config.c100)
             return camera
         else:
-            self.log.error(f"Camera could not be identified with camera type: '{config.type}'.")
-            raise InvalidCameraTypeException(f"Invalid camera type: {config.type}")
+            self.log.error(
+                f"Camera could not be identified with camera type: '{config.type}'.")
+            raise InvalidCameraTypeException(
+                f"Invalid camera type: {config.type}")
 
     def __get_frame_specs(self, cap: cv2.VideoCapture) -> tuple[int, int]:
         frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -105,6 +113,7 @@ class CameraProcessor:
         if video_file_extension == "mp4":
             encoder_protocol_code: int = VideoWriter_fourcc(*"mp4v")
         else:
-            self.log.error(f"Unknown video file extension: {video_file_extension}")
+            self.log.error(
+                f"Unknown video file extension: {video_file_extension}")
             encoder_protocol_code = -1
         return encoder_protocol_code

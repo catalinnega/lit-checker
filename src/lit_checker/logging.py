@@ -1,5 +1,6 @@
 import logging
 import logging.handlers
+import os
 import sys
 from dataclasses import dataclass, field
 
@@ -8,10 +9,14 @@ from dataclasses import dataclass, field
 class LogConfig:
     level: str = field(default="info", metadata={"help": "logging level type"})
     name: str = field(default="main", metadata={"help": "Logger name"})
-    log_file_path: str = field(default="log.txt", metadata={"help": "Log file path"})
+    log_file_name: str = field(default="log.txt", metadata={
+                               "help": "Log file name"})
 
 
-def get_logger(log_config: LogConfig) -> logging.Logger:
+def get_logger(log_config: LogConfig, output_directory: str = 'out') -> logging.Logger:
+    output_directory = os.path.join(output_directory, 'logs')
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
     logging_level = get_logging_level(log_config)
     formatter = get_formatter()
 
@@ -21,10 +26,11 @@ def get_logger(log_config: LogConfig) -> logging.Logger:
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
 
+    output_path = os.path.join(output_directory, log_config.log_file_name)
     file_handler = logging.handlers.TimedRotatingFileHandler(
-        log_config.log_file_path,
-        when="S",
-        interval=5,
+        output_path,
+        when="D",
+        interval=1,
     )
 
     logger.addHandler(console_handler)
