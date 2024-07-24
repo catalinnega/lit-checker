@@ -49,7 +49,8 @@ class CameraProcessor:
             if motion_detected:
                 self.frame_buffer.append(frame.copy())
             elif motion_detection_changed:
-                self.write_frames(self.frame_buffer)
+                if len(self.frame_buffer) >= self.config.camera.minimum_write_frames:
+                    self.write_frames(self.frame_buffer)
                 self.frame_buffer = []
             if maximum_frames and len(self.frame_buffer) >= maximum_frames:
                 self.log.info(f"Maximum frames reached: {maximum_frames}")

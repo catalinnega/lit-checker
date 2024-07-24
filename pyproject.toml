@@ -27,6 +27,7 @@ pre-commit = "*"
 pytest = "*"
 ruff = "*"
 taskipy = "*"
+ipykernel = "^6.29.5"
 
 [tool.taskipy.tasks]
 clean = { cmd = "rm -rf .mypy_cache/ .pytest_cache/ build/ dist/ *.egg-info", help = "Remove build artifacts" }
