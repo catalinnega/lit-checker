@@ -32,11 +32,9 @@ class BackgroundImageProcessor:
         self, background_image_path: str, camera_url: str
     ) -> NDArray[np.uint8]:
         if not os.path.exists(background_image_path):
-            background_image = self.__capture_background_image(
-                camera_url, background_image_path)
+            background_image = self.__capture_background_image(camera_url, background_image_path)
         else:
-            background_image = self.__load_background_image(
-                background_image_path)
+            background_image = self.__load_background_image(background_image_path)
         return background_image
 
     def __load_background_image(self, background_image_path: str) -> NDArray[np.uint8]:

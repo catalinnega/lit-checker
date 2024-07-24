@@ -51,16 +51,14 @@ class MotionDetector:
             foreground_frame = self.foreground_processor.apply_foreground_post_processing(
                 foreground_frame
             )
-            contours = self.foreground_processor.find_contours(
-                foreground_frame)
+            contours = self.foreground_processor.find_contours(foreground_frame)
             motion_detected, motion_detection_changed = self.decide_motion_by_contour_areas(
                 contours
             )
             if motion_detection_changed:
                 if motion_detected:
                     self.log.info("Motion detected")
-                    self.foreground_processor.plot_contour(
-                        current_frame, contours)
+                    self.foreground_processor.plot_contour(current_frame, contours)
                 else:
                     self.log.info("Motion stopped")
         else:
@@ -124,8 +122,7 @@ class MotionDetector:
         motion_dict["motion_detection"] = motion_detection
 
         if isinstance(motion_dict["detection_persistance_buffer"], Deque):
-            motion_dict["detection_persistance_buffer"].append(
-                is_area_over_min_thr)
+            motion_dict["detection_persistance_buffer"].append(is_area_over_min_thr)
         return motion_dict
 
     def __is_motion_detection_ready(self) -> bool:
@@ -143,13 +140,13 @@ class MotionDetector:
 
     def __apply_background_subtractor(self, frame: NDArray[np.uint8]) -> NDArray[np.uint8]:
         frame_cv2 = self.foreground_processor.apply_background_subtractor_on_frame(
-            frame, self.motion_detected)
+            frame, self.motion_detected
+        )
         frame = np.array(frame_cv2, dtype=np.uint8)
         return frame
 
     def __init_current_motion_feature_dict(self) -> Dict[str, bool | Deque[bool]]:
-        buffer: Deque[bool] = deque(
-            maxlen=self.detection_persistance_config.memory_size)
+        buffer: Deque[bool] = deque(maxlen=self.detection_persistance_config.memory_size)
         motion_dict: Dict[str, bool | Deque[bool]] = {
             "motion_detection": False,
             "detection_persistance_buffer": buffer,

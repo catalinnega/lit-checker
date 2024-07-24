@@ -9,12 +9,11 @@ from dataclasses import dataclass, field
 class LogConfig:
     level: str = field(default="info", metadata={"help": "logging level type"})
     name: str = field(default="main", metadata={"help": "Logger name"})
-    log_file_name: str = field(default="log.txt", metadata={
-                               "help": "Log file name"})
+    log_file_name: str = field(default="log.txt", metadata={"help": "Log file name"})
 
 
-def get_logger(log_config: LogConfig, output_directory: str = 'out') -> logging.Logger:
-    output_directory = os.path.join(output_directory, 'logs')
+def get_logger(log_config: LogConfig, output_directory: str = "out") -> logging.Logger:
+    output_directory = os.path.join(output_directory, "logs")
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
     logging_level = get_logging_level(log_config)

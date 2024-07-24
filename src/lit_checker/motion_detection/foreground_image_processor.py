@@ -19,12 +19,10 @@ class ForegroundImageProcessor:
         self.verbose = verbose
 
     def apply_background_subtractor_on_frame(
-            self,
-            frame: NDArray[np.uint8],
-            motion_detected: bool = False) -> NDArray[np.uint8]:
+        self, frame: NDArray[np.uint8], motion_detected: bool = False
+    ) -> NDArray[np.uint8]:
         learning_rate = 0.0 if motion_detected else -1.0
-        frame_cv2 = self.background_subtractor.apply(
-            frame, learningRate=learning_rate)
+        frame_cv2 = self.background_subtractor.apply(frame, learningRate=learning_rate)
         frame = np.array(frame_cv2, dtype=np.uint8)
         return frame
 
@@ -67,12 +65,10 @@ class ForegroundImageProcessor:
     def apply_foreground_post_processing(
         self, foreground_frame: NDArray[np.uint8]
     ) -> NDArray[np.uint8]:
-        _, binary_mask = cv2.threshold(
-            foreground_frame, 200, 255, cv2.THRESH_BINARY)
+        _, binary_mask = cv2.threshold(foreground_frame, 200, 255, cv2.THRESH_BINARY)
         kernel = np.ones((5, 5), np.uint8)
         clean_mask_cv2 = cv2.morphologyEx(binary_mask, cv2.MORPH_CLOSE, kernel)
-        clean_mask_cv2 = cv2.morphologyEx(
-            clean_mask_cv2, cv2.MORPH_OPEN, kernel)
+        clean_mask_cv2 = cv2.morphologyEx(clean_mask_cv2, cv2.MORPH_OPEN, kernel)
         clean_mask = np.array(clean_mask_cv2, dtype=np.uint8)
         return clean_mask
 
@@ -116,18 +112,15 @@ class ForegroundImageProcessor:
             os.makedirs(local_output_dir)
             self.log.info(f"Created directory at: {local_output_dir}")
 
-        output_path = os.path.join(
-            local_output_dir, f"{output_fname_prefix}_current.jpg")
+        output_path = os.path.join(local_output_dir, f"{output_fname_prefix}_current.jpg")
         cv2.imwrite(output_path, current_frame)
         self.log.info(f"Wrote added image at {output_path}")
 
-        output_path = os.path.join(
-            local_output_dir, f"{output_fname_prefix}_add.jpg")
+        output_path = os.path.join(local_output_dir, f"{output_fname_prefix}_add.jpg")
         cv2.imwrite(output_path, added_frame)
         self.log.info(f"Wrote added image at {output_path}")
 
-        output_path = os.path.join(
-            local_output_dir, f"{output_fname_prefix}_foreground.jpg")
+        output_path = os.path.join(local_output_dir, f"{output_fname_prefix}_foreground.jpg")
         cv2.imwrite(output_path, foreground_frame)
         self.log.info(f"Wrote foreground image at {output_path}")
 
