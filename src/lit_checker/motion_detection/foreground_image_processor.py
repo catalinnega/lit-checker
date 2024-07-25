@@ -55,7 +55,7 @@ class ForegroundImageProcessor:
 
     def find_contours(self, foreground_frame: NDArray[np.uint8]) -> list[NDArray[np.int32]]:
         found_contours, _ = cv2.findContours(
-            foreground_frame.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+            foreground_frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
         contours: list[NDArray[np.int32]] = [
             np.array(contour, dtype=np.int32) for contour in found_contours
@@ -79,7 +79,7 @@ class ForegroundImageProcessor:
         if not os.path.exists(local_output_dir):
             os.makedirs(local_output_dir)
             self.log.info(f"Created directory at: {local_output_dir}")
-        foreground_frame_copy = current_frame.copy()
+        foreground_frame_copy = current_frame
         output_path = os.path.join(local_output_dir, "contour_add.jpg")
         cv2.drawContours(foreground_frame_copy, contours, -1, (0, 255, 0), 2)
         cv2.imwrite(output_path, foreground_frame_copy)

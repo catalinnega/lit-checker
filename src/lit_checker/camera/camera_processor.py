@@ -44,9 +44,9 @@ class CameraProcessor:
                 self.log.warning("Frame could not be captured")
                 break
 
-            motion_detected, motion_detection_changed = self.motion_detector.apply(frame.copy())
+            motion_detected, motion_detection_changed = self.motion_detector.apply(frame)
             if motion_detected:
-                self.frame_buffer.append(frame.copy())
+                self.frame_buffer.append(frame)
             elif motion_detection_changed:
                 if len(self.frame_buffer) >= self.config.camera.minimum_write_frames:
                     self.write_frames(self.frame_buffer)
