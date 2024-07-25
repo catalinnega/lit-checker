@@ -64,6 +64,50 @@ labelme your_video_directory --label your_labels.txt --nodata --keep-prev
 
 - You should open the 554 port on the firewall.
 
+## Creating a service account from Google Drive API 
+Creating a `service-secrets.json` file from the Google API Console involves setting up a service account and downloading the key in JSON format. Here are the detailed steps:
+
+1. **Access the Google API Console**:
+   - Go to the [Google API Console](https://console.developers.google.com/).
+
+2. **Create a New Project**:
+   - If you don’t have a project yet, click on the project dropdown (top-left corner) and select "New Project."
+   - Fill in the required details and create the project.
+
+3. **Enable the APIs**:
+   - Select your project from the project dropdown.
+   - Go to the "Library" in the sidebar.
+   - Search for the API you need (e.g., Google Drive API, Google Sheets API) and click on it.
+   - Click the "Enable" button to enable the API for your project.
+
+4. **Create a Service Account**:
+   - Navigate to "IAM & Admin" > "Service accounts" in the sidebar.
+   - Click on "Create Service Account" at the top.
+   - Fill in the details for your service account (name, ID, description).
+   - Click "Create and Continue."
+
+5. **Assign Roles to the Service Account**:
+   - Choose the role(s) that your service account needs. For example, for Google Sheets API, you might choose "Editor."
+   - Click "Continue."
+
+6. **Create a Key for the Service Account**:
+   - Click on "Done" after assigning roles.
+   - In the "Service accounts" list, find the account you just created.
+   - Click on the service account to edit it.
+   - Go to the "Keys" tab.
+   - Click "Add Key" > "Create New Key."
+   - Select "JSON" as the key type and click "Create."
+
+7. **Download the JSON Key File**:
+   - The JSON key file will be downloaded automatically to your computer. This file contains your `service-secrets.json`.
+
+8. **Store the JSON Key File Securely**:
+   - Rename the downloaded file to `service-secrets.json` if needed.
+   - Store this file securely and do not expose it publicly as it contains sensitive information.
+
+
+Use this `service-secrets.json` file in your application to authenticate.
+
 ## References
  Data annotation: [Image Polygonal Annotation with Python
 ](https://github.com/labelmeai/labelme)
