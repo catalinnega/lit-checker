@@ -18,6 +18,15 @@ motion_detection:
     memory_size: 150
     activation_detection_ratio_threshold: 0.0
     deactivation_detection_ratio_threshold: 0.1
+drive:
+  enabled: False
+  client_json_file_path: '/workspaces/lit-checker/configs/config.json'
+  google_drive_root_folder: 'lit-checker'
+mail:
+  account:
+    address: 'account@gmail.com'
+    to_address: 'account@gmail.com'
+    password: 'password'
 log:
   level: info
   log_file_name: 'log.txt'
