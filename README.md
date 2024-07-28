@@ -46,15 +46,23 @@ import lit-checker
 ```
 
 ### Data annotation
-Convert your video to images to create a video-images folder:
+For data annotation and subsequent model finetuning, use the 'lit-checker-trainer' project, which also manages the required packages for annotation:
+```bash
+git clone https://github.com/catalinnega/lit-checker-trainer
+```
+
+Alternatively, you can manually install 'video-cli' and 'labelme' packages to run the following commands:
+
+-  Convert your video to images to create a video-images folder:
 ```bash
 video-toimg your_video_file ## # this creates your_video_file/ directory
 ```
 
-Run the annotation tool on your video-images folder:
+- Run the annotation tool on your video-images folder:
 ```bash
-labelme your_video_directory --label your_labels.txt --nodata --keep-prev
+labelme your_video_directory --labels your_labels.txt --nodata --keep-prev
 ```
+
 
 ## Camera account information parsing
 ### Camera configuration (Tapo c100)

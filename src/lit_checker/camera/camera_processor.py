@@ -4,7 +4,7 @@ from datetime import datetime
 
 import cv2
 import numpy as np
-from cv2 import VideoWriter_fourcc  # type: ignore
+from cv2 import VideoWriter_fourcc
 from lit_checker.args import FilesConfig, GlobalConfig
 from lit_checker.camera.args import CameraConfig
 from lit_checker.camera.base_camera import BaseCamera
