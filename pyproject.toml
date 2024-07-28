@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lit-checker"
-version = "0.1.0"
+version = "0.2.0"
 description = "computer vision experiment"
 authors = ["catalinnega <none@gmail.com>"]
 readme = "README.md"
