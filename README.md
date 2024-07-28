@@ -10,12 +10,12 @@ Computer vision experiment (in progress)
 ## Current features:
  - Capturing Tapo C100 camera feed;
  - Applying motion detection and saving detection video;
- - Uploading detections to Google Drive and notifying the user on mail with the video link;
+ - Uploading detections to Google Drive and notifying the user via mail with the video link;
 ### In progress:
- - Personalised object detection by few-shot learning on mannualy annotated frames. (https://github.com/catalinnega/lit-checker-trainer).
+ - Personalized object detection using few-shot learning on manually annotated frames. (https://github.com/catalinnega/lit-checker-trainer).
 
 ## Installation
-You can install the required python packages with '__poetry__' or '__pip__'. If you want, you can also run the __.devcontainer__ for a docker image with _python3.11_.
+You can install the required python packages with '__poetry__' or '__pip__'. Optionally you can run the __.devcontainer__ for a docker image with _python3.11_.
 ### Poetry
 ```sh
 poetry shell
