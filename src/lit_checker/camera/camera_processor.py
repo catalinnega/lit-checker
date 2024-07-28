@@ -52,8 +52,7 @@ class CameraProcessor:
                 self.log.warning("Frame could not be captured")
                 break
 
-            motion_detected, motion_detection_changed = self.motion_detector.apply(
-                frame)
+            motion_detected, motion_detection_changed = self.motion_detector.apply(frame)
             if motion_detected:
                 self.frame_buffer.append(frame)
             elif motion_detection_changed:
@@ -81,15 +80,13 @@ class CameraProcessor:
             for frame in frame_buffer:
                 video_writer.write(frame)
             video_writer.release()
-            self.log.info(
-                f"Wrote {len(self.frame_buffer)} frames at {output_video_path}")
+            self.log.info(f"Wrote {len(self.frame_buffer)} frames at {output_video_path}")
             if self.google_drive_uploader is not None:
                 self.google_drive_uploader.upload_file_to_folder(
                     file_path=output_video_path, folder_name="motion_detections"
                 )
         else:
-            self.log.warning(
-                f"Attempted to write empty buffer (length {len(frame_buffer)})")
+            self.log.warning(f"Attempted to write empty buffer (length {len(frame_buffer)})")
             output_video_path = ""
         return output_video_path
 
@@ -105,10 +102,8 @@ class CameraProcessor:
             camera = C100Camera(config.c100)
             return camera
         else:
-            self.log.error(
-                f"Camera could not be identified with camera type: '{config.type}'.")
-            raise InvalidCameraTypeException(
-                f"Invalid camera type: {config.type}")
+            self.log.error(f"Camera could not be identified with camera type: '{config.type}'.")
+            raise InvalidCameraTypeException(f"Invalid camera type: {config.type}")
 
     def __get_frame_specs(self, cap: cv2.VideoCapture) -> tuple[int, int]:
         frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -126,8 +121,7 @@ class CameraProcessor:
         if video_file_extension == "mp4":
             encoder_protocol_code: int = VideoWriter_fourcc(*"mp4v")
         else:
-            self.log.error(
-                f"Unknown video file extension: {video_file_extension}")
+            self.log.error(f"Unknown video file extension: {video_file_extension}")
             encoder_protocol_code = -1
         return encoder_protocol_code
 
@@ -138,8 +132,7 @@ class CameraProcessor:
         logger: logging.Logger,
     ) -> GoogleDriveUploader | None:
         if drive_config.enabled:
-            google_drive_uploader = GoogleDriveUploader(
-                drive_config, mail_config, logger=logger)
+            google_drive_uploader = GoogleDriveUploader(drive_config, mail_config, logger=logger)
         else:
             google_drive_uploader = None
         return google_drive_uploader
